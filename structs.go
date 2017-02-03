@@ -27,10 +27,11 @@ func main() {
 	Moon
 	*/
 
-	sp := &s
+	sp := &s            // 구조체 포인터 &s 로 주소값을 주게 되면 동일하게 sp의 값을 변경하면 s도 변경이 된다. 주소로 참조 되니깐~
 	fmt.Println(sp.age) // 50
 
 	sp.age = 100
 	fmt.Println(sp.age) // 100
+	fmt.Println(s.age)  // 100
 
 }
