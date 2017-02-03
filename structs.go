@@ -9,6 +9,8 @@ type person struct {
 
 func main() {
 	fmt.Println(person{"AceT", 17})
+	th := person{"hahaha", 200}
+	fmt.Println(th.age)
 	fmt.Println(person{name: "AceT2", age: 27})
 	fmt.Println(person{name: "Mae"})
 	fmt.Println(&person{name: "Sun", age: 40})
@@ -18,6 +20,7 @@ func main() {
 
 	/*  result :
 	{AceT 17}
+	200
 	{AceT2 27}
 	{Mae 0}
 	&{Sun 40}
