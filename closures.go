@@ -4,7 +4,7 @@ import "fmt"
 
 // intSeq 함수는 내부에 익명으로 정의한 또 다른 함수를 반환합니다.
 // 반환된 함수는 클로저를 만들기 위해 i 변수를 가둬둡니다(closes over).
-func intSeq() func() int { // 형태가 매우 이상하네.. 지금까지는 func intSeq(a,b int) int {} 등의 형태가 되겠다.
+func intSeq() func() int { // 형태가 매우 이상하네.. 지금까지는 func intSeq(a,b int) int {} 등의 형태가 되겠다. 즉, func() int가 리턴으로 보면 될것 같다.
 	i := 0
 	return func() int {
 		i += 1
@@ -13,7 +13,7 @@ func intSeq() func() int { // 형태가 매우 이상하네.. 지금까지는 fu
 }
 func main() {
 	// intSeq를 호출하여, 결괏값(함수)을 nextInt에 할당합니다. 이 함숫값은 nextInt를 호출할 때마다 업데이트 되는 i 값을 캡쳐합니다.
-	nextInt := intSeq()
+	nextInt := intSeq() // return이 함수이기 때문에 아래와 같이 nextInt() 를 호출!
 	// netxtInt를 몇 번 호출하면서 클로저가 어떻게 동작하는지 봅시다.
 	fmt.Println(nextInt()) // 1
 	fmt.Println(nextInt()) // 2
