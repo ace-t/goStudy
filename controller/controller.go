@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"net/http"
+	"fmt"
+	"log"
 )
 
 var (
@@ -27,7 +29,10 @@ func main()  {
 	flags()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/person", personService)
+	fmt.Printf("Serving HTTP at: http://%s:%d\n", host, port)
 
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), mux); err != nil {
+		log.Fatalf("ListenAndServe: %v", err)
+	}
 
-	
 }
