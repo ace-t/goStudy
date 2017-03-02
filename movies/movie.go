@@ -98,6 +98,17 @@ type MovieInfoResult struct {
 	}`json:"channel"`
 }
 
+type movieTitleResult struct {
+	Channel struct{
+		Q string `json:"q"`
+		Item [] struct{
+			Title [] struct{
+				Content string `json:"content"`
+			}`json:"title"`
+		}`json:"item"`
+	}`json:"channel"`
+} 
+
 // personResult, err := PersonRequest(personName)
 
 func HandlerMovieInfo(w http.ResponseWriter, r *http.Request) {
@@ -108,6 +119,44 @@ func HandlerMovieInfo(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	renderOutput(w, movieResult)
+}
+
+func HandleMovieTitles(w http.ResponseWriter, r *http.Request)  {
+	movieTitleResult, err := getMovieTitleInfo(r.FormValue("q"))
+	if err != nil {
+		panic(err)
+	}
+	renderOutput(w, movieTitleResult)
+	
+}
+
+func getMovieTitleInfo(query string) (*movieTitleResult, error)  {
+	baseUrl := "https://apis.daum.net/contents/movie?apikey=29c7e60b0deec823061babb82691aeb7&output=json"
+	u, err := url.Parse(baseUrl) // u :  https://apis.daum.net/contents/movie?apikey=29c7e60b0deec823061babb82691aeb7&output=json
+	fmt.Println(u)
+	if err != nil {
+		panic(err) // panic()함수는 현재 함수를 즉시 멈추고 현재 함수에 defer 함수들을 모두 실행한 후 즉시 리턴한다.
+	}
+
+	q := u.Query()  // q => map[apikey:[29c7e60b0deec823061babb82691aeb7] output:[json]]
+	q.Set("q", query) // map[apikey:[29c7e60b0deec823061babb82691aeb7] output:[json] query:[미생]]
+
+	u.RawQuery = q.Encode() // https://apis.daum.net/contents/movie?apikey=29c7e60b0deec823061babb82691aeb7&output=json&q=%!E(MISSING)B%!A(MISSING)F%!B(MISSING)8%!E(MISSING)C%9D
+
+	resp, err := http.Get(u.String())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(u.String())
+	defer resp.Body.Close() // defer : defer를 호출하는 함수가 리턴하기 직전에 호출(java finally 구문 같은?
+
+	body, err := ioutil.ReadAll(resp.Body) // Body : io.ReadCloser
+	var result movieTitleResult
+	if err := json.Unmarshal(body, &result); err != nil {
+		panic(err)
+	}
+
+	return &result, nil
 }
 
 func getMovieInfo(query string) (*MovieInfoResult, error)  {
@@ -153,6 +202,7 @@ func main() {
 	fmt.Printf("Serving HTTP at: http://%s:%d\n", host, port)
 
 	mux.HandleFunc("/movies", WrapHandle(HandlerMovieInfo))
+	mux.HandleFunc("/movies/titles", WrapHandle(HandleMovieTitles))
 
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), mux); err != nil {
 		log.Fatalf("ListenAndServe: %v", err)
